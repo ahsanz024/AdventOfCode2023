@@ -1,29 +1,83 @@
 defmodule Day1 do
+
+  @input_file "inputs/day1.txt"
+
+  # Part 1
   def part1 do
-    case File.read("inputs/day1.txt") do
-      {:ok, input} -> input
-      {:error, reason} -> "Error reading file: #{reason}"
-    end
-    |> String.split("\n")
-    |> Enum.map(&extract_digits/1)
+    output = read_lines_from_file()
+    |> Enum.map(&extract_numeric_digits/1)
     |> Enum.sum()
 
-
+    IO.puts(inspect(output))
   end
 
-  def extract_digits(string) do
+
+  # Part 2
+  def part2 do
+    output = read_lines_from_file()
+    |> Enum.map(&extract_alphanumeric_digits/1)
+    |> List.flatten()
+    |> Enum.sum()
+
+    IO.puts(inspect(output))
+  end
+
+
+  def extract_numeric_digits(string) do
     all_numbers = Regex.scan(~r/\d/, string)
     |> List.flatten()
     |> Enum.map(&String.to_integer/1)
 
-    get_digits(all_numbers)
+    get_final_digits(all_numbers)
   end
 
-  defp get_digits([]), do: 0
-  defp get_digits(list) do
+
+  def extract_alphanumeric_digits(string) do
+    regex = ~r/(?=(\d)|(one)|(two)|(three)|(four)|(five)|(six)|(seven)|(eight)|(nine))/i
+
+    string
+    |> String.downcase()
+    |> (&Regex.scan(regex, &1)).()
+    |> List.flatten()
+    |> Enum.filter(fn x -> x != "" end)
+    |> Enum.map(&convert_to_digit/1)
+    |> get_final_digits()
+  end
+
+  defp get_final_digits([]), do: 0
+  defp get_final_digits(list) do
     [head | _] = list
     last_element = Enum.at(list, length(list) - 1, head)
     "#{head}" <> "#{last_element}"
       |> String.to_integer()
+  end
+
+  defp convert_to_digit(string) do
+    case Integer.parse(string) do
+      {value, _} ->
+        value
+      :error ->
+        digit_words = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+        digit_words
+          |> Enum.find_index(fn x -> x == string end)
+          |> Kernel.then(fn x -> x + 1 end)
+    end
+  end
+
+
+  defp read_lines_from_file() do
+    case File.read(@input_file) do
+      {:ok, input} ->
+        input|> String.split("\n")
+      {:error, reason} -> "Error reading file: #{reason}"
+    end
+  end
+
+  defp write_to_file(filename, data) do
+    case File.write(filename, data) do
+      :ok ->
+        IO.puts("File written successfully")
+      {:error, reason} -> IO.puts("Error writing file: #{reason}")
+    end
   end
 end
