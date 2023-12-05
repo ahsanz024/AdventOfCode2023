@@ -1,10 +1,11 @@
 defmodule Day1 do
+  import Helper
 
   @input_file "inputs/day1.txt"
 
   # Part 1
   def part1 do
-    output = read_lines_from_file()
+    output = read_lines_from_file(@input_file)
     |> Enum.map(&extract_numeric_digits/1)
     |> Enum.sum()
 
@@ -14,7 +15,7 @@ defmodule Day1 do
 
   # Part 2
   def part2 do
-    output = read_lines_from_file()
+    output = read_lines_from_file(@input_file)
     |> Enum.map(&extract_alphanumeric_digits/1)
     |> List.flatten()
     |> Enum.sum()
@@ -61,23 +62,6 @@ defmodule Day1 do
         digit_words
           |> Enum.find_index(fn x -> x == string end)
           |> Kernel.then(fn x -> x + 1 end)
-    end
-  end
-
-
-  defp read_lines_from_file() do
-    case File.read(@input_file) do
-      {:ok, input} ->
-        input|> String.split("\n")
-      {:error, reason} -> "Error reading file: #{reason}"
-    end
-  end
-
-  defp write_to_file(filename, data) do
-    case File.write(filename, data) do
-      :ok ->
-        IO.puts("File written successfully")
-      {:error, reason} -> IO.puts("Error writing file: #{reason}")
     end
   end
 end
