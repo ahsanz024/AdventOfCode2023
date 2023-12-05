@@ -16,4 +16,10 @@ defmodule Day2Test do
     assert output == expected_output
   end
 
+  test "part2/0 calculates the correct output" do
+    expected_output = 2286
+    assert {:ok, output} = Day2.part2(@test_input)
+    assert output == expected_output
+  end
+
 end
